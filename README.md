@@ -7,6 +7,13 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
+## Backend API
+
+This dashboard is a frontend-only React app and expects a backend API that serves JSON at `/api/cards`.
+
+- If you have a local API server, run it on `http://localhost:4000` and the Vite dev server will proxy `/api` to it.
+- Alternatively, create a `.env` file with `VITE_API_URL=http://localhost:4000` (or your backend URL).
+
 ## React Compiler
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API = import.meta.env.VITE_API_URL || "https://nfc-tracking-api.onrender.com";
+const API = import.meta.env.VITE_API_URL?.trim();
+const CARDS_ENDPOINT = API ? `${API.replace(/\/+$/, "")}/api/cards` : "/api/cards";
 
 export default function App() {
     const [cards, setCards] = useState([]);
@@ -13,11 +14,26 @@ export default function App() {
 
         const load = async () => {
             try {
-                const res = await axios.get(`${API}/api/cards`);
+                const res = await axios.get(CARDS_ENDPOINT);
                 if (mounted) setCards(res.data);
             } catch (err) {
                 console.error(err);
-                if (mounted) setError("Failed to load dashboard data");
+                let message = "Failed to load dashboard data.";
+
+                if (axios.isAxiosError(err)) {
+                    const status = err.response?.status;
+                    const statusText = err.response?.statusText;
+                    const apiMessage = err.response?.data?.message || err.message;
+                    if (err.code === 'ECONNREFUSED') {
+                        message = 'Failed to connect to the dashboard backend. Make sure the API server is running and VITE_API_URL is set correctly.'
+                    } else {
+                        message = `Failed to load dashboard data${status ? ` (${status}${statusText ? ` ${statusText}` : ""})` : ""}: ${apiMessage}`;
+                    }
+                } else if (err instanceof Error) {
+                    message = `Failed to load dashboard data: ${err.message}`;
+                }
+
+                if (mounted) setError(message);
             } finally {
                 if (mounted) setLoading(false);
             }
